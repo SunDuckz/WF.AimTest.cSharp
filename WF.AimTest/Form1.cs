@@ -14,13 +14,14 @@ namespace WF.AimTest
 
         // timer
         private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.Timer timer2;
 
         // random
         private Random random;
 
         // Stopwatch
         private Stopwatch stopwatch;
-
+        private int qtdClick = 0;
 
 
 
@@ -56,6 +57,7 @@ namespace WF.AimTest
             };
 
             btnAlvo.Click += btnAlvoClick;
+                
             // adiciona botao alvo na tela
             this.Controls.Add(btnAlvo);
 
@@ -93,7 +95,7 @@ namespace WF.AimTest
         {
             // para o timer
             timer.Stop();
-
+            
             int x = random.Next(50, this.ClientSize.Width - 70);
             int y = random.Next(50, this.ClientSize.Height - 70);
 
@@ -102,15 +104,56 @@ namespace WF.AimTest
             btnAlvo.Visible = true;
             stopwatch.Restart();
         }
+            
+
+        private void btnAlvoDoubleCLick(object sender, EventArgs e)
+        {
+            stopwatch.Stop();
+
+            btnAlvo.Visible = false;
+            MessageBox.Show($"Tempo de reação: {stopwatch.ElapsedMilliseconds}", "ms");
+            Task.Delay(500).ContinueWith(_ => IniciarNovaRodada(),
+                TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
 
         private void btnAlvoClick(object sender, EventArgs e)
         {
-            stopwatch.Stop();
-            btnAlvo.Visible = false;
-            MessageBox.Show($"Tempo de reação: {stopwatch.ElapsedMilliseconds}", "ms");
-            Task.Delay(500).ContinueWith( _ => IniciarNovaRodada(),
-                TaskScheduler.FromCurrentSynchronizationContext());
+            timer2 = new System.Windows.Forms.Timer();
+            timer2.Interval = 1000;
+            timer2.Start();
+            
+            qtdClick += 1;
+
+            timer2.Tick += falha;
+
+            if(qtdClick == 2)
+            {
+                stopwatch.Stop();
+                btnAlvo.Visible = false;
+                qtdClick = 0;
+                timer2.Stop();
+                MessageBox.Show($"Tempo de reação: {stopwatch.ElapsedMilliseconds}", "ms");
+                Task.Delay(500).ContinueWith(_ => IniciarNovaRodada(),
+                    TaskScheduler.FromCurrentSynchronizationContext());
+
+               
+            }
+
         }
+
+        private void falha(object sender, EventArgs e)
+        {
+            timer2.Stop();
+            stopwatch.Stop();
+            qtdClick = 0;
+            btnAlvo.Visible = false;
+            MessageBox.Show("Você não deu clique duplo e falhou, seu lixo","lixo");
+            Task.Delay(500).ContinueWith(_ => IniciarNovaRodada(),
+                TaskScheduler.FromCurrentSynchronizationContext());
+
+        }
+
 
     }
 }
