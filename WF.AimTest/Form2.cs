@@ -1,66 +1,86 @@
-using System.Diagnostics;
+ï»¿using System.Diagnostics;
 
 namespace WF.AimTest
 {
-    public partial class Form1 : Form
+    public partial class Form2 : Form
     {
         // Local de
         // variaveis
         // propriedades
 
-        // 2 Buttons
+        // Buttons
+        private Button btnVoltar;
+
         private Button btnIniciar;
         private Button btnAlvo;
-        private Button btnForm2;
+
         // timer
         private System.Windows.Forms.Timer timer;
-        private System.Windows.Forms.Timer timer2;
 
         // random
         private Random random;
 
         // Stopwatch
         private Stopwatch stopwatch;
-        private Stopwatch stopwatchClick;
-        private int qtdClick = 0;
 
+
+        // labels
+        List<Label> lblList = new List<Label>();
+
+        int lblAtual = 0;
+     
 
 
 
         // construtor da tela
-        public Form1()
+        public Form2()
         {
             InitializeComponent();
 
             // determina o titulo da tela
-            this.Text = "Aim Tester";
+            this.Text = "Modo Placar";
             // determina largura e altura
             this.Size = new Size(500, 500);
-            // determina a posição inicial da tela -> nesse caso centralizada
+            // determina a posiÃ§Ã£o inicial da tela -> nesse caso centralizada
             this.StartPosition = FormStartPosition.CenterParent;
+
+
+            for (int i = 0; i < 5; i++)
+            {
+                lblList.Add(new Label()
+                {
+                    Name = "lbl" + i + 1,
+                    Text = "???",
+                    Font = new Font("Arial", 8),
+                    Size = new Size(10,30)
+                });
+            }
+            posicionarLabels();
+
+
 
             btnIniciar = new Button()
             {
-                Text = "iniciar",
+                Text = "Iniciar modo Placar",
                 Size = new Size(100, 50),
+                Top = 0,
             };
 
-            btnForm2 = new Button()
+            btnVoltar = new Button()
             {
-                Text = "Modo de placar",
+                Text = "Voltar",
                 Size = new Size(100, 50),
-                Top = this.ClientSize.Height - 50,
+               
             };
 
-            
 
+
+            //btnVoltar.Click += Close();
             btnIniciar.Click += IniciarJogo;
-            btnForm2.Click += irParaForm2;
-            //adiciona o botão na tela;
+            //adiciona o botÃ£o na tela;
 
             this.Controls.Add(btnIniciar);
-            this.Controls.Add(btnForm2);
-
+            this.Controls.Add(btnVoltar);
             this.btnAlvo = new Button()
             {
                 Size = new Size(50, 50),
@@ -69,7 +89,7 @@ namespace WF.AimTest
             };
 
             btnAlvo.Click += btnAlvoClick;
-                
+
             // adiciona botao alvo na tela
             this.Controls.Add(btnAlvo);
 
@@ -77,28 +97,25 @@ namespace WF.AimTest
             timer = new System.Windows.Forms.Timer();
             timer.Tick += MostrarBotaoAlvo;
 
-            timer2 = new System.Windows.Forms.Timer();
-            timer2.Interval = 1000;
-            timer2.Tick += ValidarFalha;
 
 
             random = new Random();
             stopwatch = new Stopwatch();
-            stopwatchClick = new Stopwatch();
+
 
             // fim construtor
         }
 
-        private void irParaForm2(object? sender, EventArgs e)
+        private void Voltar(object sender, EventArgs e)
         {
-            new Form2().ShowDialog();
+            Close();
         }
 
         // methods
 
         private void IniciarJogo(object sender, EventArgs e)
         {
-            // desabilita o botaão 
+            // desabilita o botaÃ£o 
             btnIniciar.Enabled = false;
             IniciarNovaRodada();
         }
@@ -109,12 +126,12 @@ namespace WF.AimTest
             timer.Start();
         }
 
-        private void MostrarBotaoAlvo(object sender,EventArgs e)
+        private void MostrarBotaoAlvo(object sender, EventArgs e)
         {
             // para o timer
             timer.Stop();
-            
-            int x = random.Next(50, this.ClientSize.Width - 70);
+
+            int x = random.Next(50, this.ClientSize.Width - 100);
             int y = random.Next(50, this.ClientSize.Height - 70);
 
             btnAlvo.Location = new Point(x, y);
@@ -122,14 +139,14 @@ namespace WF.AimTest
             btnAlvo.Visible = true;
             stopwatch.Restart();
         }
-            
+
 
         private void btnAlvoDoubleCLick(object sender, EventArgs e)
         {
             stopwatch.Stop();
 
             btnAlvo.Visible = false;
-            MessageBox.Show($"Tempo de reação: {stopwatch.ElapsedMilliseconds}", "ms");
+            
             Task.Delay(500).ContinueWith(_ => IniciarNovaRodada(),
                 TaskScheduler.FromCurrentSynchronizationContext());
         }
@@ -137,54 +154,36 @@ namespace WF.AimTest
 
         private void btnAlvoClick(object sender, EventArgs e)
         {
-           
-            qtdClick += 1;
-            if(qtdClick == 1)
-            {
-                timer2.Start();
 
-                stopwatchClick.Restart();
-            }
-
-            if(qtdClick == 2)
-            {
-                timer2.Stop();
-                stopwatchClick.Stop();
-
-                if(stopwatchClick.ElapsedMilliseconds > 1000)
-                {
-                    falha();
-                    return;
-                }
-                
                 stopwatch.Stop();
                 btnAlvo.Visible = false;
-                qtdClick = 0;
-                MessageBox.Show($"Tempo de reação: {stopwatch.ElapsedMilliseconds}", "ms");
-                Task.Delay(500).ContinueWith(_ => IniciarNovaRodada(),
+
+            lblList[lblAtual].Text = $"{stopwatch.ElapsedMilliseconds.ToString()} ms";
+            lblAtual++;
+            MessageBox.Show($"Tempo de reaÃ§Ã£o: {stopwatch.ElapsedMilliseconds} ms", "ms");
+            Task.Delay(500).ContinueWith(_ => IniciarNovaRodada(),
                     TaskScheduler.FromCurrentSynchronizationContext());
 
-               
+          if (lblAtual > 4)
+            {
+                lblAtual = 0;
             }
 
         }
 
-        private void ValidarFalha(object sender, EventArgs e)
-        {
-            falha();
-        }
-        private void falha()
-        {
-            timer2.Stop();
-            stopwatch.Stop();
-            qtdClick = 0;
-            btnAlvo.Visible = false;
-            MessageBox.Show("Você não deu clique duplo e falhou, seu lixo","lixo");
-            Task.Delay(500).ContinueWith(_ => IniciarNovaRodada(),
-                TaskScheduler.FromCurrentSynchronizationContext());
 
-        }
+        private void posicionarLabels()
+        {
+            int topvalue = 60;
+            foreach (Label item in lblList)
+            {
+                item.Left = 0;
+                item.Top = topvalue;
+                this.Controls.Add(item);
+                topvalue += 20;
 
+            }
+        }
 
     }
 }
