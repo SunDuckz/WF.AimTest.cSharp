@@ -156,6 +156,15 @@ namespace WF.AimTest
         private void btnAlvoClick(object sender, EventArgs e)
         {
 
+            if (btnAlvo.Size.Width >= 20 || btnAlvo.Size.Height >= 20)
+            {
+                // Aterando tamanho do botão
+                btnAlvo.Size = new Size(btnAlvo.Size.Width - 10, btnAlvo.Size.Height - 10);
+
+            }
+            
+             
+
                 stopwatch.Stop();
                 btnAlvo.Visible = false;
 
