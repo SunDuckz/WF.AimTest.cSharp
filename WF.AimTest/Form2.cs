@@ -52,7 +52,7 @@ namespace WF.AimTest
                     Name = "lbl" + i + 1,
                     Text = "???",
                     Font = new Font("Arial", 8),
-                    Size = new Size(10,30)
+                    
                 });
             }
             posicionarLabels();
@@ -70,6 +70,7 @@ namespace WF.AimTest
             {
                 Text = "Voltar",
                 Size = new Size(100, 50),
+                Top = ClientSize.Height - 50
                
             };
 
@@ -83,7 +84,7 @@ namespace WF.AimTest
             this.Controls.Add(btnVoltar);
             this.btnAlvo = new Button()
             {
-                Size = new Size(50, 50),
+                Size = new Size(100, 100),
                 BackColor = Color.Red,
                 Visible = false,
             };
