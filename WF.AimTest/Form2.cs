@@ -40,7 +40,7 @@ namespace WF.AimTest
             // determina o titulo da tela
             this.Text = "Modo Placar";
             // determina largura e altura
-            this.Size = new Size(500, 500);
+            this.Size = new Size(600, 600);
             // determina a posição inicial da tela -> nesse caso centralizada
             this.StartPosition = FormStartPosition.CenterParent;
 
@@ -132,8 +132,8 @@ namespace WF.AimTest
             // para o timer
             timer.Stop();
 
-            int x = random.Next(50, this.ClientSize.Width - 100);
-            int y = random.Next(50, this.ClientSize.Height - 70);
+            int x = random.Next(100, this.ClientSize.Width - 100);
+            int y = random.Next(100, this.ClientSize.Height - 100);
 
             btnAlvo.Location = new Point(x, y);
 
@@ -156,15 +156,21 @@ namespace WF.AimTest
         private void btnAlvoClick(object sender, EventArgs e)
         {
 
-            if (btnAlvo.Size.Width >= 30 || btnAlvo.Size.Height >= 30)
+            if (btnAlvo.Size.Width <= 20)
             {
-                // Aterando tamanho do botão
-                btnAlvo.Size = new Size(btnAlvo.Size.Width - 10, btnAlvo.Size.Height - 10);
-
+                btnIniciar.Enabled = true;
+                stopwatch.Stop();
+                timer.Stop();
+                btnAlvo.Visible= false;
+                btnAlvo.Size = new Size(100, 100);
+                MessageBox.Show("fim de jogo");
+                limparLabels();
+                return;
             }
             
              
-
+                // Aterando tamanho do botão
+                btnAlvo.Size = new Size(btnAlvo.Size.Width - 10, btnAlvo.Size.Height - 10);
                 stopwatch.Stop();
                 btnAlvo.Visible = false;
 
@@ -182,6 +188,14 @@ namespace WF.AimTest
         }
 
 
+
+        private void limparLabels()
+        {
+            foreach (Label label in lblList) {
+                label.Text = "???";            
+            }
+            lblAtual = 0;
+        }
         private void posicionarLabels()
         {
             int topvalue = 60;
